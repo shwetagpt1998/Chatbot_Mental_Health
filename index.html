@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            position: relative;
+        }
+
+        #logo {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid #4A148C;
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+
+        #logo:hover {
+            transform: scale(1.1);
+        }
+
+        #chat-popup {
+            display: none;
+            position: fixed;
+            bottom: 80px;
+            right: 20px;
+            width: 320px;
+            height: 450px;
+            background: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            overflow: hidden;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+        }
+
+        #chat-header {
+            padding: 15px;
+            background: #4A90E2;
+            color: white;
+            text-align: center;
+            font-weight: bold;
+            border-bottom: 1px solid #ddd;
+            position: relative;
+        }
+
+        #close-btn {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            cursor: pointer;
+            font-size: 20px;
+            color: white;
+        }
+
+        #chat-body {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            background: #f8f8f8;
+        }
+
+        .message {
+            display: flex;
+            align-items: flex-end;
+            max-width: 80%;
+            margin-bottom: 5px;
+            padding: 8px 12px;
+            border-radius: 15px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .user-message {
+            align-self: flex-end;
+            background-color: #007bff;
+            color: white;
+            border-bottom-right-radius: 0;
+        }
+
+        .ai-message {
+            align-self: flex-start;
+            background-color: #e1e1e1;
+            color: #333;
+            border-bottom-left-radius: 0;
+        }
+
+        #chat-input {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #ddd;
+            background-color: #fff;
+        }
+
+        #userText {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            outline: none;
+        }
+
+        #sendButton {
+            background: #4A90E2;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            margin-left: 5px;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: background 0.3s;
+            font-size: 18px; /* Set font size for the arrow */
+            line-height: 1; /* Adjust line height to keep the button height consistent */
+        }
+
+        #sendButton:hover {
+            background: #357ABD;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Logo Image -->
+    <img id="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSkF3dgcpXASKB5PxfO_Vy_3SPdG73l72wQzg&s" alt="Chatbot Logo">
+
+    <div id="chat-popup">
+        <div id="chat-header">
+            Support
+            <span id="close-btn">&times;</span>
+        </div>
+        <div id="chat-body"></div>
+        <div id="chat-input">
+            <input type="text" id="userText" placeholder="Type your message..." required>
+            <button id="sendButton">→</button>
+        </div>
+    </div>
+
+    <script>
+        const logo = document.getElementById('logo');
+        const chatPopup = document.getElementById('chat-popup');
+        const sendButton = document.getElementById('sendButton');
+        const chatBody = document.getElementById('chat-body');
+        const userText = document.getElementById('userText');
+        const closeButton = document.getElementById('close-btn');
+
+        // Show the chat popup when the logo is clicked and hide the logo
+        logo.addEventListener('click', () => {
+            logo.style.display = 'none';
+            chatPopup.style.display = 'flex';
+        });
+
+        // Hide the chat popup when the close button is clicked and show the logo
+        closeButton.addEventListener('click', () => {
+            chatPopup.style.display = 'none';
+            logo.style.display = 'block';
+        });
+
+        // Handle sending messages
+        sendButton.addEventListener('click', async () => {
+            const text = userText.value.trim();
+            if (!text) return;
+
+            // Display user message
+            const userMessage = document.createElement('div');
+            userMessage.textContent = text;
+            userMessage.classList.add('message', 'user-message');
+            chatBody.appendChild(userMessage);
+
+            // Clear input
+            userText.value = '';
+
+            try {
+                // Send request to the backend
+                const response = await fetch('http://127.0.0.1:5000/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ text })
+                });
+
+                const data = await response.json();
+
+                // Display AI response
+                const aiMessage = document.createElement('div');
+                aiMessage.textContent = `${data.response} ${data.emoji}`;
+                aiMessage.classList.add('message', 'ai-message');
+                chatBody.appendChild(aiMessage);
+
+            } catch (error) {
+                console.error('Error:', error);
+                const errorMessage = document.createElement('div');
+                errorMessage.textContent = 'An error occurred. Please try again.';
+                errorMessage.classList.add('message', 'ai-message');
+                chatBody.appendChild(errorMessage);
+            }
+
+            // Scroll to the latest message
+            chatBody.scrollTop = chatBody.scrollHeight;
+        });
+    </script>
+
+</body>
+</html>
