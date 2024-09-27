@@ -1,11 +1,14 @@
 from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS  # Enable CORS
 import joblib
 import pandas as pd
+import os  # For dynamic port
 
 # Initialize Flask App
 app = Flask(__name__)
+CORS(app)  # Enable CORS
 
-# Load the SVM model - ensure the model is saved with the correct scikit-learn version
+# Load the SVM model
 try:
     model = joblib.load("svm_model.pkl")  # Ensure this is the correct path to your model
 except FileNotFoundError:
@@ -77,7 +80,11 @@ def predict():
         return jsonify({'emotion': 'neutral', 'response': faq_response, 'emoji': '🤔'})
 
     # Predict emotion and generate response
-    prediction = model.predict([text])[0]
+    try:
+        prediction = model.predict([text])[0]
+    except Exception as e:
+        print(f"Error during prediction: {e}")
+        return jsonify({'error': 'Prediction failed. Please try again.'}), 500
 
     # Handle sensitive topics
     knowledge_base = build_knowledge_base()
@@ -91,4 +98,6 @@ def predict():
     return jsonify({'emotion': prediction, 'response': response, 'emoji': emoji})
 
 if __name__ == '__main__':
-    app.run()
+    # Get the port dynamically from the environment
+    port = int(os.environ.get('PORT', 5000))  # Default to port 5000 if no PORT variable is set
+    app.run(host='0.0.0.0', port=port)
