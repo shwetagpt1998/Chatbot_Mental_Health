@@ -5,7 +5,7 @@ import pandas as pd
 # Initialize Flask App
 app = Flask(__name__)
 
-# Load the SVM model - make sure the model is trained and saved with the correct scikit-learn version
+# Load the SVM model - ensure the model is saved with the correct scikit-learn version
 try:
     model = joblib.load("svm_model.pkl")  # Ensure this is the correct path to your model
 except FileNotFoundError:
@@ -90,5 +90,4 @@ def predict():
 
     return jsonify({'emotion': prediction, 'response': response, 'emoji': emoji})
 
-if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+
