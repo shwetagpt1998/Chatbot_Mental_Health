@@ -6,7 +6,7 @@ import os  # For dynamic port
 
 # Initialize Flask App
 app = Flask(__name__)
-CORS(app)  # Enable CORS
+CORS(app)  # Enable CORS for all domains
 
 # Load the SVM model
 try:
