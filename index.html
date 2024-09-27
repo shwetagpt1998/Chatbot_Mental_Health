@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatbot</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -56,15 +57,21 @@
         #sendButton {
             padding: 10px;
             border: none;
-            background-color: #ed96d6;
-            color: rgb(4, 4, 4);
-            border-radius: 5px;
+            background-color: #c7aa95; /* Updated background color */
+            color: white; /* Text color */
+            border-radius: 25px; /* Updated border radius */
             cursor: pointer;
             margin-left: 10px;
-            font-size: 14px;
+            display: flex; /* Flex to center icon */
+            align-items: center; /* Center icon vertically */
         }
         #sendButton:hover {
-            background-color: #f73c3c;
+            background-color: #f73c3c; /* Optional hover color */
+        }
+        .material-icons {
+            font-size: 18px;
+            color: white; /* White color for the icon */
+            margin: 0; /* Remove margin around the icon */
         }
     </style>
 </head>
@@ -72,8 +79,10 @@
     <div id="chat">
         <div id="chatBody"></div>
         <div id="inputArea">
-            <input type="text" id="userInput" placeholder="Describe your situation or scenario..." />
-            <button id="sendButton">Submit</button>
+            <input type="text" id="userInput" placeholder="Chat here..." />
+            <button id="sendButton">
+                <span class="material-icons">send</span>
+            </button>
         </div>
     </div>
     <script>
