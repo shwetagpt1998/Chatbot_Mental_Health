@@ -1,8 +1,8 @@
 from flask import Flask, request, jsonify, send_from_directory
-from flask_cors import CORS  # Enable CORS
+from flask_cors import CORS
 import joblib
 import pandas as pd
-import os  # For dynamic port
+import os
 
 # Initialize Flask App
 app = Flask(__name__)
@@ -17,7 +17,7 @@ except FileNotFoundError:
 
 # Load datasets with specified encoding to handle Unicode errors
 try:
-    faq_df = pd.read_csv("Merged_Conversation.csv", encoding='ISO-8859-1')  # Use the encoding that works for your data
+    faq_df = pd.read_csv("Merged_Conversation.csv", encoding='ISO-8859-1')  # Adjust the encoding if necessary
 except FileNotFoundError:
     faq_df = pd.DataFrame(columns=['Questions', 'Answers'])  # Fallback to empty DataFrame if file not found
     print("Error: FAQ file not found. Please ensure 'Merged_Conversation.csv' exists in the correct path.")
@@ -61,6 +61,10 @@ def handle_faqs(text):
 def index():
     return send_from_directory('.', 'index.html')
 
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.getcwd(), 'favicon.ico')
+
 @app.route('/predict', methods=['POST'])
 def predict():
     if model is None:
@@ -93,11 +97,9 @@ def predict():
         emoji = '😔'  # Use a neutral or empathetic emoji for sensitive topics
     else:
         response = knowledge_base.get(prediction, knowledge_base['default'])
-        emoji = emotions_emoji_dict.get(prediction, "😊")  # Default to smiling emoji if no match
+        emoji = emotions_emoji_dict.get(prediction, '😊')
 
     return jsonify({'emotion': prediction, 'response': response, 'emoji': emoji})
 
 if __name__ == '__main__':
-    # Get the port dynamically from the environment
-    port = int(os.environ.get('PORT', 5000))  # Default to port 5000 if no PORT variable is set
-    app.run(host='0.0.0.0', port=port)
+    app.run(debug=True)
