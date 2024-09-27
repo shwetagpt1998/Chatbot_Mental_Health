@@ -33,17 +33,17 @@ emotions_emoji_dict = {
 
 def build_knowledge_base():
     return {
-        'joy': "It's wonderful to hear that you're feeling joyful! 😊",
-        'sadness': "I'm really sorry you're feeling this way. 😔",
-        'neutral': "It sounds like you’re in a neutral state. 😊",
-        'anxiety': "It seems like you might be feeling anxious. 😟",
-        'anger': "It sounds like you’re feeling frustrated or angry. 😠",
-        'default': "I'm here to help with anything you need. 😊",
+        'joy': "It's wonderful to hear that you're feeling joyful! 😊 Consider sharing your happiness with others!",
+        'sadness': "I'm really sorry you're feeling this way. 😔 It's important to talk about your feelings; I'm here to listen.",
+        'neutral': "It sounds like you’re in a neutral state. 😊 Sometimes it's nice to just take a moment to breathe and reflect.",
+        'anxiety': "It seems like you might be feeling anxious. 😟 Have you tried any relaxation techniques? I'm here to help.",
+        'anger': "It sounds like you’re feeling frustrated or angry. 😠 It's okay to express that; what do you think triggered this feeling?",
+        'default': "I'm here to help with anything you need. 😊 How can I assist you further?",
         'suicidal': "I'm really sorry you're feeling this way. It's important to talk to someone who can provide the right support.",
-        'worry': "It sounds like you might be feeling worried. 😟",
-        'love': "It sounds like you’re feeling affectionate or loving. ❤️",
-        'hate': "It seems like you might be feeling frustrated or angry. 😡",
-        'fun': "It sounds like you’re having fun! 😄"
+        'worry': "It sounds like you might be feeling worried. 😟 Would you like to share what's on your mind?",
+        'love': "It sounds like you’re feeling affectionate or loving. ❤️ It's great to express those feelings!",
+        'hate': "It seems like you might be feeling frustrated or angry. 😡 It's important to address those feelings positively.",
+        'fun': "It sounds like you’re having fun! 😄 What’s making you feel good today?"
     }
 
 def handle_greetings(text):
