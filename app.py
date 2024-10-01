@@ -12,12 +12,14 @@ CORS(app)  # Enable CORS for all domains
 model_path = "svm_model.pkl"  # Ensure this is the correct path to your model
 faq_path = "Merged_Conversation.csv"  # Ensure this is the correct path to your FAQ data
 
+# Load model
 try:
     model = joblib.load(model_path)
 except FileNotFoundError:
     model = None
     print(f"Error: Model file not found. Please ensure '{model_path}' exists in the correct path.")
 
+# Load FAQ data
 try:
     faq_df = pd.read_csv(faq_path, encoding='ISO-8859-1')
 except FileNotFoundError:
@@ -28,8 +30,20 @@ except FileNotFoundError:
 emotions_emoji_dict = {
     "anger": "😠", "disgust": "🤮", "fear": "😨😱", "happy": "🤗",
     "joy": "😂", "neutral": "😐", "sad": "😔", "sadness": "😔",
-    "shame": "😳", "surprise": "😮", "worry": "😟", "love": "❤️", "hate": "😡", "fun": "😄"
+    "shame": "😳", "surprise": "😮", "worry": "😟", "love": "❤️", "hate": "😡", "fun": "😄",
+    "relief": "😌", "empty": "😶", "enthusiasm": "😃", "boredom": "😴"
 }
+
+# Fix encoding issues by removing unwanted characters like Â and replacing non-breaking spaces
+def fix_encoding_issues(text):
+    if isinstance(text, str):
+        text = text.replace('Â', '')  # Remove unwanted characters like 'Â'
+        text = text.replace('\u00A0', ' ')  # Replace non-breaking spaces
+        return text
+    return text
+
+# Apply encoding fix to the FAQ answers
+faq_df['Clean_Answers'] = faq_df['Answers'].apply(fix_encoding_issues)
 
 def build_knowledge_base():
     return {
@@ -43,7 +57,11 @@ def build_knowledge_base():
         'worry': "It sounds like you might be feeling worried. 😟 Would you like to share what's on your mind?",
         'love': "It sounds like you’re feeling affectionate or loving. ❤️ It's great to express those feelings!",
         'hate': "It seems like you might be feeling frustrated or angry. 😡 It's important to address those feelings positively.",
-        'fun': "It sounds like you’re having fun! 😄 What’s making you feel good today?"
+        'fun': "It sounds like you’re having fun! 😄 What’s making you feel good today?",
+        'relief': "It sounds like you're feeling relieved. 😌 I'm glad you feel better now!",
+        'empty': "It seems like you’re feeling empty or disconnected. 😶 I'm here if you want to talk.",
+        'enthusiasm': "You're feeling enthusiastic! 😃 That's awesome! What are you excited about?",
+        'boredom': "It seems like you're feeling bored. 😴 Maybe trying something new could help!"
     }
 
 def handle_greetings(text):
@@ -55,7 +73,7 @@ def handle_greetings(text):
 def handle_faqs(text):
     faq_match = faq_df[faq_df['Questions'].str.contains(text, case=False, na=False)]
     if not faq_match.empty:
-        return faq_match['Answers'].values[0]
+        return faq_match['Clean_Answers'].values[0]
     return None
 
 @app.route('/')
